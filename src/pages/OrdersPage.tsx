@@ -28,7 +28,7 @@ interface Order {
 }
 
 const OrdersPage = () => {
-  const { role, user } = useAuth();
+  const { profile, user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -77,16 +77,16 @@ const OrdersPage = () => {
 
   useEffect(() => {
     loadOrders();
-  }, [role, user]);
+  }, [profile, user]);
 
   const loadOrders = async () => {
     try {
       setLoading(true);
       
       // In a real app, this would call the appropriate API based on role
-      // if (role === 'customer') {
+      // if (profile?.role === 'customer') {
       //   const response = await orderApi.getByCustomer(user?.id || '');
-      // } else if (role === 'seller') {
+      // } else if (profile?.role === 'seller') {
       //   const response = await orderApi.getBySeller(user?.id || '');
       // } else {
       //   // Admin can see all orders
@@ -97,10 +97,10 @@ const OrdersPage = () => {
       setTimeout(() => {
         let filteredOrders = mockOrders;
         
-        if (role === 'customer') {
+        if (profile?.role === 'customer') {
           // Show only customer's orders
           filteredOrders = mockOrders.filter(order => order.customerId === 'CUST-001');
-        } else if (role === 'seller') {
+        } else if (profile?.role === 'seller') {
           // Show only orders containing seller's items
           filteredOrders = mockOrders.filter(order => order.sellerId === 'SELL-001');
         }
@@ -131,7 +131,7 @@ const OrdersPage = () => {
   };
 
   const getPageTitle = () => {
-    switch (role) {
+    switch (profile?.role) {
       case 'admin': return 'All Orders';
       case 'seller': return 'My Sales';
       case 'customer': return 'My Orders';
@@ -140,7 +140,7 @@ const OrdersPage = () => {
   };
 
   const getPageDescription = () => {
-    switch (role) {
+    switch (profile?.role) {
       case 'admin': return 'View and manage all system orders';
       case 'seller': return 'Track orders containing your inventory items';
       case 'customer': return 'View your order history and track shipments';
@@ -168,7 +168,7 @@ const OrdersPage = () => {
           <p className="text-muted-foreground">{getPageDescription()}</p>
         </div>
         
-        {role === 'customer' && (
+        {profile?.role === 'customer' && (
           <Button>
             <ShoppingCart className="mr-2 h-4 w-4" />
             New Order
@@ -237,7 +237,7 @@ const OrdersPage = () => {
                     <CardDescription className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
                       <span>{new Date(order.orderDate).toLocaleDateString()}</span>
-                      {(role === 'admin' || role === 'seller') && (
+                      {(profile?.role === 'admin' || profile?.role === 'seller') && (
                         <>
                           <span>•</span>
                           <User className="h-4 w-4" />
@@ -267,7 +267,7 @@ const OrdersPage = () => {
                       <span className="text-muted-foreground text-sm ml-2">
                         × {item.quantity}
                       </span>
-                      {(role === 'admin' || role === 'customer') && (
+                      {(profile?.role === 'admin' || profile?.role === 'customer') && (
                         <div className="text-xs text-muted-foreground">
                           Seller: {item.seller}
                         </div>
@@ -304,12 +304,12 @@ const OrdersPage = () => {
             <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No orders found</h3>
             <p className="text-muted-foreground">
-              {role === 'customer' 
+              {profile?.role === 'customer' 
                 ? "You haven't placed any orders yet. Browse our plant catalog to get started!"
                 : "No orders match your current view. Orders will appear here when customers make purchases."
               }
             </p>
-            {role === 'customer' && (
+            {profile?.role === 'customer' && (
               <Button className="mt-4">
                 Browse Plants
               </Button>

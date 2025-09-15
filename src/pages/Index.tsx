@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/context/AuthContext';
 
 const Index = () => {
-  const { role } = useAuth();
+  const { profile } = useAuth();
 
   const features = [
     {
@@ -19,13 +19,13 @@ const Index = () => {
       icon: Package,
       title: 'Inventory Control', 
       description: 'Real-time inventory tracking for medicines, fertilizers, and plant care products.',
-      link: role === 'seller' ? '/inventory' : '/medicines'
+      link: profile?.role === 'seller' ? '/inventory' : '/medicines'
     },
     {
       icon: Users,
       title: 'Multi-Role System',
       description: 'Separate workflows for administrators, sellers, and customers with role-based permissions.',
-      link: `/${role}`
+      link: `/${profile?.role || 'customer'}`
     },
     {
       icon: ShoppingCart,
@@ -36,7 +36,7 @@ const Index = () => {
   ];
 
   const getDashboardLink = () => {
-    switch(role) {
+    switch(profile?.role) {
       case 'admin': return '/admin';
       case 'seller': return '/seller'; 
       case 'customer': return '/customer';
